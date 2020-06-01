@@ -6,7 +6,7 @@ import './style.less'
 export default class Page { 
     constructor() {
         this.waveCanvas = new Canvas();
-        this._canvas =  this.waveCanvas._canvas;
+        this._canvas = this.waveCanvas._canvas;
         this._canvas.style.border = "3px solid black";
         this._root = document.getElementById('root');
 
