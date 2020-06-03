@@ -1,4 +1,4 @@
-export default class Lines {
+export default class LinesStorage {
     constructor() {
         this._lines = [];
     }

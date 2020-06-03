@@ -10,10 +10,18 @@ export default class Canvas {
         this._ctx = this._canvas.getContext('2d');
     }
 
-    // draw = (waves) => {
-    //     this.clearCanvas()
-        
-    // }
+    drawLines = (lines, bariers) => { 
+        this.clearCanvas();
+
+        lines.forEach(xyrc => {
+            this.drawLine(xyrc);
+        });
+
+        // bariers.forEach(barier => {
+        //     this.drawLine(barier);
+        // });
+        // this.drawLine(xyrc);
+    }
 
     drawLine = xyrc => {
         const {x, y, prevX, prevY, r, color} = xyrc;
@@ -28,6 +36,10 @@ export default class Canvas {
         this._ctx.closePath()
     }
 
+    drawBariers = (xyrc) => {
+        this.clearCanvas();
+        this.drawLine(xyrc);
+    }
 
     clearCanvas = () => {
         this._ctx.clearRect(0, 0, this._w, this._h);
