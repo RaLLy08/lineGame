@@ -3,20 +3,25 @@ import { LINE_LENGTH, LINE_END } from "../consts/line-consts";
 
 export default class LineAnimation {
     constructor(store, page) {       
-        this._w = CANVAS_WIDTH;
-        this._h = CANVAS_HEIGHT;
         this._canvas = page.waveCanvas;
         this._linesStore = store.lines;
         this._bariersStore = store.bariers;
 
+        this.isStop = false;
         this.actions = {
             pressed: false,
             pressValue: false,
         };
-        //window.requestAnimationFrame(this.animate)
-        setInterval(() => {
-            this.animate()
-        }, 0);
+        this.maxHole = 50;
+        this.minTop = 300;
+        this.maxTop = CANVAS_HEIGHT - 300;
+        this.lineYspeed = 1;
+        this.lineXspeed = 1;
+        this.bariersSpeed = 1;
+        window.requestAnimationFrame(this.animate)
+        // setInterval(() => {
+        //     this.animate()
+        // }, 0);
         this.init();
 
         page.onCanvasPress(this.press)
@@ -40,12 +45,9 @@ export default class LineAnimation {
         //this._canvas.drawLine({x:100, y:100, prevX:80, prevY:80, r:2, color:'black'})
         const line = {
             x: 0, 
-            y: this._h/2, 
-            vy: 0,
-            r: 1, 
+            y: CANVAS_HEIGHT/2, 
+            r: 4, 
             color:'black',
-            t: 1,
-            vx: 1,
         };
 
         this._linesStore.addLine(line);
@@ -54,36 +56,29 @@ export default class LineAnimation {
     setBariers = () => {
         // const top = 200;
         // const bottom = 220;
-        const maxHole = 100;
-        const minHole = 10;
-        const top = Math.random() * 780;
-        const bottom = Math.random() * ((top + maxHole) - top) + top;
-
-        const barier = {
+        //const hole = this.getRand(this.minHole, this.maxHole);
+        const top = this.getRand(this.minTop, this.maxTop)
+        const bottom = top + this.maxHole;
+        
+        const topBarier = {
             x: CANVAS_WIDTH,
             y: top,
-            prevX: 0,
             prevY: 0,
-            color: 'red',
+            color: 'blue',
             r: 2,
-            vy: 0,
             vx: 1,
-            t: 1,
         }
         //this._bariersStore.addBarier(barier);     
         
-        const barier2 = {
+        const bottomBarier = {
             x: CANVAS_WIDTH,
             y: bottom,
-            prevX: 0,
-            prevY: 900,
+            prevY: CANVAS_HEIGHT,
             color: 'red',
             r: 2,
-            vy: 0,
             vx: 1,
-            t: 1,
         }
-        this._bariersStore.addBarier([barier, barier2]);  
+        this._bariersStore.addBarier([topBarier, bottomBarier]);  
         // const barier3 = {
         //     x: CANVAS_WIDTH - 100,
         //     y: 500,
@@ -112,37 +107,62 @@ export default class LineAnimation {
     }
 
     animate = () => {
-        this.lineAnimation();
-        this.barierAnimation(); 
+        if (!this.isStop) {
+            this.lineAnimation();
+            this.barierAnimation(); 
 
-        this._canvas.drawLines([
-            ...this._linesStore.getLines(), 
-            ...this._bariersStore.getBariers().flat()
-        ]);
-       
+            this._canvas.drawLines([
+                ...this._linesStore.getLines(), 
+                ...this._bariersStore.getBariers().flat()
+            ]);
+        }
+        window.requestAnimationFrame(this.animate)
     }
 
     lineAnimation = () => {
         const lines = this._linesStore.getLines();
-        const last = {...lines[lines.length - 1]};
+        const last = lines[lines.length - 1];
+        
+        const bariers = this._bariersStore.getBariers();
 
         lines.forEach(line => {
             this.changeDirection(line)
 
             if (line.xIsStop) {
-                line.x -= 1;
-                line.prevX -= 1;
+                line.x -= this.lineXspeed;
+                line.prevX -= this.lineXspeed;
             }
             
             if (last.x > LINE_END) {
                 line.xIsStop = true
             }
         });
-        if (lines.length > LINE_LENGTH) lines.shift();
-        const lastPoint = {...lines[lines.length - 1]}
 
-        this.move(lastPoint)
-        this._linesStore.addLine(lastPoint);
+        if (lines.length > LINE_LENGTH) lines.shift();
+        const newLast = {...lines[lines.length - 1]}
+
+        this.move(newLast)
+        this._linesStore.addLine(newLast);
+        //crossing with barier
+        bariers.forEach(barier => {
+            const top = barier[0];
+            const bottom = barier[1];
+            const isCrossed = Math.abs(top.x - newLast.x) < 2;
+            const holeRange = bottom.y - top.y;
+            const isInHole = (Math.abs(newLast.y - top.y) < holeRange) && (newLast.y - top.y) > 0;
+            //if the diff is not negative and not bigger then hole
+            if (isCrossed && !isInHole) {
+                if (confirm('game over!')) {
+                    location.reload()
+                }
+                this.isStop = true;
+            }
+            if (isCrossed) {
+                this.lineYspeed += 0.2;
+                this.lineXspeed += 0.2;
+                this.bariersSpeed += 0.2;
+            }
+        });
     }
 
     barierAnimation = () => {
@@ -152,17 +172,14 @@ export default class LineAnimation {
             //this.changeDirection(barier)
             const top = barier[0];
             const bottom = barier[1];
-            // if (barier.xIsStop) {
-            //     barier.x -= 1;
-            //     barier.prevX -= 1;
-            // }
+  
+            //spawn a new barier
             if (top.x < 0) {
                 top.x = CANVAS_WIDTH;
                 bottom.x = CANVAS_WIDTH;
-                const maxHole = 100;
-                const minHole = 10;
-                top.y = Math.random() * 780;
-                bottom.y = Math.random() * ((top.y + maxHole) - (top.y + minHole)) + (top.y + minHole);
+                
+                top.y = this.getRand(this.minTop, this.maxTop);
+                bottom.y = top.y + this.maxHole;
             }
          
 
@@ -174,10 +191,10 @@ export default class LineAnimation {
     changeDirection = (line) => {
         if (this.actions.pressed && !this.actions.pressValue) {
             line.color = 'yellow'
-            line.vy = -1;
+            line.vy = -this.lineYspeed;
         } else if (this.actions.pressed && this.actions.pressValue) {
             line.color = 'red'
-            line.vy = 1;
+            line.vy = this.lineYspeed;
         } else {
             line.color = 'black'
             line.vy = 0;
@@ -185,24 +202,21 @@ export default class LineAnimation {
     }
 
     move = (opts) => {
-        //console.log(opts);
         opts.prevX = opts.x
         opts.prevY = opts.y
 
         if (!opts.xIsStop) opts.xt = opts.t;
 
-        opts.y += opts.vy * opts.t;
-        opts.x += opts.vx * opts.xt; 
+        opts.y += opts.vy;
+        opts.x += this.lineXspeed; 
     }
 
     moveBariers = (opts) => {
-        //console.log(opts);
         opts.prevX = opts.x
-        //opts.prevY = opts.y
-
-        if (!opts.xIsStop) opts.xt = opts.t;
-
-        //opts.y += opts.vy * opts.t;
-        opts.x -= opts.vx * opts.xt; 
+        opts.x -= this.bariersSpeed; 
     }
+
+    getRand = (min, max) => (Math.random() * (max - min) ) + min;
+    
+    distance = (x1, y1, x2, y2) => Math.sqrt((Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2)));
 }

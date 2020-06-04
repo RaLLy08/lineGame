@@ -1,0 +1,12 @@
+.wrapper {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  font-family: cursive;
+}
+.canvas-wrapper {
+  display: flex;
+  justify-content: center;
+}
+

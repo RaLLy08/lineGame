@@ -27,12 +27,14 @@ export default class Canvas {
         const {x, y, prevX, prevY, r, color} = xyrc;
         //console.log(xyrc);
         this._ctx.beginPath(); 
+        this._ctx.lineCap = 'round'
+        this._ctx.lineWidth = r;
         this._ctx.strokeStyle = color; 
         this._ctx.moveTo(prevX, prevY); 
         this._ctx.lineTo(x, y); 
         
         this._ctx.stroke(); 
-        this._ctx.lineWidth = r;
+        
         this._ctx.closePath()
     }
 

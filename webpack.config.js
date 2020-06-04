@@ -8,7 +8,7 @@ module.exports = {
     //watch: true,
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, '../wave-simulator-back/public')
+        path: path.resolve(__dirname, './public')
     },
     devServer: {
         port: 7776,

@@ -28,16 +28,16 @@ export default class Page {
         this._canvas.onmousedown = () => {
             cb();
         }
-    }
-
-    onCanvasMove = (cb) => {
-        this._canvas.onmousemove = () => {
+        this._canvas.ontouchstart = () => {
             cb();
         }
     }
 
     onCanvasUp = (cb) => {
         this._canvas.onmouseup = () => {
+            cb();
+        }
+        this._canvas.ontouchend = () => {
             cb();
         }
     }
