@@ -10,17 +10,22 @@ export default class Canvas {
         this._ctx = this._canvas.getContext('2d');
     }
 
-    drawLines = (lines, bariers) => { 
+    draw = (linesAll, score) => {
         this.clearCanvas();
 
+        this.drawLines(linesAll);
+        this.drawScore(score);
+    }
+    drawScore = score => {
+        this._ctx.fillText(score, CANVAS_WIDTH/2, 60);
+        this._ctx.font = "60px Comic Sans MS"
+        //this._ctx.textAlign = "left";
+    }
+
+    drawLines = (lines) => { 
         lines.forEach(xyrc => {
             this.drawLine(xyrc);
         });
-
-        // bariers.forEach(barier => {
-        //     this.drawLine(barier);
-        // });
-        // this.drawLine(xyrc);
     }
 
     drawLine = xyrc => {
@@ -36,11 +41,6 @@ export default class Canvas {
         this._ctx.stroke(); 
         
         this._ctx.closePath()
-    }
-
-    drawBariers = (xyrc) => {
-        this.clearCanvas();
-        this.drawLine(xyrc);
     }
 
     clearCanvas = () => {

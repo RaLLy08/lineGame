@@ -7,5 +7,5 @@ export default class BariersStorage {
 
     addBarier = (barier) => this._bariers.push(barier);
 
-    clearAlBariers = () => this._bariers = [];
+    clearAllBariers = () => this._bariers = [];
 }

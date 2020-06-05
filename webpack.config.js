@@ -8,7 +8,7 @@ module.exports = {
     //watch: true,
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, './public')
+        path: path.resolve(__dirname, '../line-game-back/public')
     },
     devServer: {
         port: 7776,

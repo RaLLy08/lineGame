@@ -18,6 +18,8 @@ export default class LineAnimation {
         this.lineYspeed = 1;
         this.lineXspeed = 1;
         this.bariersSpeed = 1;
+        this.speedLimit = 7
+        this.score = 0; //or number of crossed bariers 
         window.requestAnimationFrame(this.animate)
         // setInterval(() => {
         //     this.animate()
@@ -65,8 +67,9 @@ export default class LineAnimation {
             y: top,
             prevY: 0,
             color: 'blue',
-            r: 2,
+            r: 10,
             vx: 1,
+            id: 1,
         }
         //this._bariersStore.addBarier(barier);     
         
@@ -75,34 +78,12 @@ export default class LineAnimation {
             y: bottom,
             prevY: CANVAS_HEIGHT,
             color: 'red',
-            r: 2,
+            r: 10,
             vx: 1,
+            id: 1,
         }
+       
         this._bariersStore.addBarier([topBarier, bottomBarier]);  
-        // const barier3 = {
-        //     x: CANVAS_WIDTH - 100,
-        //     y: 500,
-        //     prevX: 0,
-        //     prevY: 0,
-        //     color: 'red',
-        //     r: 2,
-        //     vy: 0,
-        //     vx: 1,
-        //     t: 1,
-        // }
-        // this._bariersStore.addBarier(barier3);     
-        
-        // const barier4 = {
-        //     x: CANVAS_WIDTH - 100,
-        //     y: 1000,
-        //     prevX: 0,
-        //     prevY: 800,
-        //     color: 'red',
-        //     r: 2,
-        //     vy: 0,
-        //     vx: 1,
-        //     t: 1,
-        // }
         // this._bariersStore.addBarier(barier4); 
     }
 
@@ -111,10 +92,10 @@ export default class LineAnimation {
             this.lineAnimation();
             this.barierAnimation(); 
 
-            this._canvas.drawLines([
+            this._canvas.draw([
                 ...this._linesStore.getLines(), 
                 ...this._bariersStore.getBariers().flat()
-            ]);
+            ], this.score);
         }
         window.requestAnimationFrame(this.animate)
     }
@@ -144,23 +125,31 @@ export default class LineAnimation {
         this.move(newLast)
         this._linesStore.addLine(newLast);
         //crossing with barier
+        //let oneCross = false;
         bariers.forEach(barier => {
             const top = barier[0];
             const bottom = barier[1];
-            const isCrossed = Math.abs(top.x - newLast.x) < 2;
+            const isCrossed = Math.abs(top.x - newLast.x) <= this.lineXspeed;
+
             const holeRange = bottom.y - top.y;
             const isInHole = (Math.abs(newLast.y - top.y) < holeRange) && (newLast.y - top.y) > 0;
             //if the diff is not negative and not bigger then hole
             if (isCrossed && !isInHole) {
-                if (confirm('game over!')) {
+                if (confirm(`game over! \nscore: ${this.score}`)) {
                     location.reload()
                 }
                 this.isStop = true;
             }
-            if (isCrossed) {
-                this.lineYspeed += 0.2;
-                this.lineXspeed += 0.2;
-                this.bariersSpeed += 0.2;
+            
+            if (isCrossed && (this.score !== top.id)) {
+                this.score = top.id;
+               
+                if (this.speedLimit > this.lineXspeed) {
+                    this.lineYspeed += 0.2;
+                    this.lineXspeed += 0.2;
+                    this.bariersSpeed += 0.2;
+                    
+                }
             }
         });
     }
@@ -180,6 +169,10 @@ export default class LineAnimation {
                 
                 top.y = this.getRand(this.minTop, this.maxTop);
                 bottom.y = top.y + this.maxHole;
+                top.id += 1;
+
+                this._bariersStore.clearAllBariers()
+                this._bariersStore.addBarier([top, bottom]);
             }
          
 
@@ -212,7 +205,7 @@ export default class LineAnimation {
     }
 
     moveBariers = (opts) => {
-        opts.prevX = opts.x
+        opts.prevX = opts.x - this.bariersSpeed
         opts.x -= this.bariersSpeed; 
     }
 
