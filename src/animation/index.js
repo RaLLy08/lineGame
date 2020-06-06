@@ -142,10 +142,23 @@ export default class LineAnimation {
             const isInHole = (Math.abs(line.y - top.y) < holeRange) && (line.y - top.y) > 0;
             //if the diff is not negative and not bigger then hole
             if (top.isCrossed) {
-                top.y-= 10
-                bottom.y += 10
-                bottom.x -= 10
-                top.x -=10
+                if (this.score.value > 6) {
+                    top.y -= 5
+                    bottom.y += 5
+                } 
+                if (this.score.value > 9) {
+                    top.y -= 5
+                    bottom.y += 5
+                } 
+                if (this.score.value > 15) {
+                    bottom.x -= 10
+                    top.x -=10
+                }
+                if (this.score.value > 20) {
+                    bottom.x -= 10
+                    top.x -= 10
+                }
+                
             }
             if (isCrossed && !isInHole) {
                 if (confirm(`game over! \nscore: ${this.score.value}`)) {
