@@ -37,7 +37,7 @@ export default class Page {
         this._canvas.onmouseup = () => {
             cb();
         }
-        this._canvas.ontouchend = () => {
+        this._canvas.ontouchcancel = () => {
             cb();
         }
     }

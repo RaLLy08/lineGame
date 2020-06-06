@@ -19,7 +19,10 @@ export default class LineAnimation {
         this.lineXspeed = 1;
         this.bariersSpeed = 1;
         this.speedLimit = 7
-        this.score = 0; //or number of crossed bariers 
+        this.score = {
+            value: 0,
+            color: 'black'
+        }; //or number of crossed bariers 
         window.requestAnimationFrame(this.animate)
         // setInterval(() => {
         //     this.animate()
@@ -92,10 +95,13 @@ export default class LineAnimation {
             this.lineAnimation();
             this.barierAnimation(); 
 
-            this._canvas.draw([
+            this._canvas.draw(
+            [
                 ...this._linesStore.getLines(), 
                 ...this._bariersStore.getBariers().flat()
-            ], this.score);
+            ], 
+            this.score
+            );
         }
         window.requestAnimationFrame(this.animate)
     }
@@ -104,8 +110,6 @@ export default class LineAnimation {
         const lines = this._linesStore.getLines();
         const last = lines[lines.length - 1];
         
-        const bariers = this._bariersStore.getBariers();
-
         lines.forEach(line => {
             this.changeDirection(line)
 
@@ -124,34 +128,47 @@ export default class LineAnimation {
 
         this.move(newLast)
         this._linesStore.addLine(newLast);
-        //crossing with barier
-        //let oneCross = false;
+        this.crossingBarier(newLast)
+    }
+
+    crossingBarier = (line) => {
+        const bariers = this._bariersStore.getBariers();
+
         bariers.forEach(barier => {
             const top = barier[0];
             const bottom = barier[1];
-            const isCrossed = Math.abs(top.x - newLast.x) <= this.lineXspeed;
+            const isCrossed = Math.abs(top.x - line.x) <= this.lineXspeed;
+            const isSameBarier = this.score.value === top.id;
 
             const holeRange = bottom.y - top.y;
-            const isInHole = (Math.abs(newLast.y - top.y) < holeRange) && (newLast.y - top.y) > 0;
+            const isInHole = (Math.abs(line.y - top.y) < holeRange) && (line.y - top.y) > 0;
             //if the diff is not negative and not bigger then hole
             if (isCrossed && !isInHole) {
-                if (confirm(`game over! \nscore: ${this.score}`)) {
+                if (confirm(`game over! \nscore: ${this.score.value}`)) {
                     location.reload()
                 }
                 this.isStop = true;
             }
             
-            if (isCrossed && (this.score !== top.id)) {
-                this.score = top.id;
+            if (isCrossed && !isSameBarier) {
+                this.changeScore(top.id);
                
                 if (this.speedLimit > this.lineXspeed) {
                     this.lineYspeed += 0.2;
                     this.lineXspeed += 0.2;
                     this.bariersSpeed += 0.2;
-                    
                 }
             }
         });
+    } 
+
+    changeScore = (value) => {
+        this.score.value = value;
+        if (value > 15) {
+            this.score.color = 'blue';
+        } else {
+            this.score.color = 'black';
+        }
     }
 
     barierAnimation = () => {
@@ -175,7 +192,6 @@ export default class LineAnimation {
                 this._bariersStore.addBarier([top, bottom]);
             }
          
-
             this.moveBariers(top);
             this.moveBariers(bottom);
         });
@@ -209,7 +225,5 @@ export default class LineAnimation {
         opts.x -= this.bariersSpeed; 
     }
 
-    getRand = (min, max) => (Math.random() * (max - min) ) + min;
-    
-    distance = (x1, y1, x2, y2) => Math.sqrt((Math.pow((x1 - x2), 2) + Math.pow((y1 - y2), 2)));
+    getRand = (min, max) => (Math.random() * (max - min) ) + min;  
 }

@@ -17,8 +17,11 @@ export default class Canvas {
         this.drawScore(score);
     }
     drawScore = score => {
-        this._ctx.fillText(score, CANVAS_WIDTH/2, 60);
+        const {value, color} = score;
+
+        this._ctx.fillText(value, CANVAS_WIDTH/2, 60);
         this._ctx.font = "60px Comic Sans MS"
+        this._ctx.fillStyle = color;
         //this._ctx.textAlign = "left";
     }
 
