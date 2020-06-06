@@ -151,10 +151,10 @@ export default class LineAnimation {
                     bottom.y += 5
                 } 
                 if (this.score.value > 15) {
-                    bottom.x -= 10
-                    top.x -=10
+                    bottom.x -= 4
+                    top.x -= 4 
                 }
-                if (this.score.value > 20) {
+                if (this.score.value > 24) {
                     bottom.x -= 10
                     top.x -= 10
                 }
