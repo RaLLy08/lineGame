@@ -138,22 +138,27 @@ export default class LineAnimation {
             const top = barier[0];
             const bottom = barier[1];
             const isCrossed = Math.abs(top.x - line.x) <= this.lineXspeed;
-            const isSameBarier = this.score.value === top.id;
-
             const holeRange = bottom.y - top.y;
             const isInHole = (Math.abs(line.y - top.y) < holeRange) && (line.y - top.y) > 0;
             //if the diff is not negative and not bigger then hole
+            if (top.isCrossed) {
+                top.y-= 10
+                bottom.y += 10
+                bottom.x -= 10
+                top.x -=10
+            }
             if (isCrossed && !isInHole) {
                 if (confirm(`game over! \nscore: ${this.score.value}`)) {
                     location.reload()
                 }
                 this.isStop = true;
             }
-            
-            if (isCrossed && !isSameBarier) {
+            // line crossed and barier is not the same
+            if (isCrossed && !top.isCrossed) {
                 this.changeScore(top.id);
-               
-                if (this.speedLimit > this.lineXspeed) {
+                top.isCrossed = true;
+
+                if (this.speedLimit > this.bariersSpeed) {
                     this.lineYspeed += 0.2;
                     this.lineXspeed += 0.2;
                     this.bariersSpeed += 0.2;
@@ -174,19 +179,21 @@ export default class LineAnimation {
     barierAnimation = () => {
         const bariers = this._bariersStore.getBariers();
         
-        bariers.forEach((barier, i) => {
+        bariers.forEach(barier => {
             //this.changeDirection(barier)
             const top = barier[0];
             const bottom = barier[1];
   
             //spawn a new barier
             if (top.x < 0) {
+                //creatin new barier
                 top.x = CANVAS_WIDTH;
                 bottom.x = CANVAS_WIDTH;
                 
                 top.y = this.getRand(this.minTop, this.maxTop);
                 bottom.y = top.y + this.maxHole;
                 top.id += 1;
+                top.isCrossed = false;
 
                 this._bariersStore.clearAllBariers()
                 this._bariersStore.addBarier([top, bottom]);
@@ -208,6 +215,7 @@ export default class LineAnimation {
             line.color = 'black'
             line.vy = 0;
         }
+
     }
 
     move = (opts) => {
