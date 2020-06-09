@@ -157,10 +157,10 @@ export default class LineAnimation {
                 this.changeBariersPosition(top, bottom)
             }
             if (isCrossed && !isInHole) {
-                // if (confirm(`game over! \nscore: ${this.score.value}`)) {
-                //     location.reload()
-                // }
-                // this.isStop = true;
+                if (confirm(`game over! \nscore: ${this.score.value}`)) {
+                    location.reload()
+                }
+                this.isStop = true;
             }
             // line crossed and barier is not the same
             if (isCrossed && !top.isCrossed) {
