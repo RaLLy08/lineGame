@@ -2,7 +2,7 @@ import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../consts/canvas-consts";
 import { LINE_LENGTH, LINE_END } from "../consts/line-consts";
 // import '../sounds/sound2.mp3'
 // import '../sounds/sound3.mp3'
-// import '../sounds/tick.mp3'
+import '../sounds/tick.mp3'
 
 
 export default class LineAnimation {
@@ -36,9 +36,9 @@ export default class LineAnimation {
         page.onCanvasPress(this.press)
         page.onCanvasUp(this.up)
         
-        // this.music = new Audio('sounds/sound2.mp3');
+        //this.music = new Audio('sounds/sound2.mp3');
         // this.nextMusic = new Audio('sounds/sound3.mp3');
-        // this.barierSound = new Audio('sounds/tick.mp3');
+        this.barierSound = new Audio('sounds/tick.mp3');
         ///-----TEMP-----
         // setTimeout(() => {
         //     this.playMusic();
