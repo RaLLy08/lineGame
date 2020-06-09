@@ -31,6 +31,9 @@ export default class LineAnimation {
 
         page.onCanvasPress(this.press)
         page.onCanvasUp(this.up)
+
+        // this.music = new Audio('sound2.mp3')
+        // this.music.play()
     }
     press = () => {
         this.actions.pressed = true
@@ -112,14 +115,11 @@ export default class LineAnimation {
         
         lines.forEach(line => {
             this.changeDirection(line)
-
-            if (line.xIsStop) {
-                line.x -= this.lineXspeed;
-                line.prevX -= this.lineXspeed;
-            }
             
             if (last.x > LINE_END) {
                 line.xIsStop = true
+                line.x -= this.lineXspeed;
+                line.prevX -= this.lineXspeed;
             }
         });
 
@@ -142,23 +142,7 @@ export default class LineAnimation {
             const isInHole = (Math.abs(line.y - top.y) < holeRange) && (line.y - top.y) > 0;
             //if the diff is not negative and not bigger then hole
             if (top.isCrossed) {
-                if (this.score.value > 6) {
-                    top.y -= 5
-                    bottom.y += 5
-                } 
-                if (this.score.value > 9) {
-                    top.y -= 5
-                    bottom.y += 5
-                } 
-                if (this.score.value > 15) {
-                    bottom.x -= 4
-                    top.x -= 4 
-                }
-                if (this.score.value > 24) {
-                    bottom.x -= 10
-                    top.x -= 10
-                }
-                
+                this.changeBariersPosition(top, bottom)
             }
             if (isCrossed && !isInHole) {
                 if (confirm(`game over! \nscore: ${this.score.value}`)) {
@@ -186,6 +170,25 @@ export default class LineAnimation {
             this.score.color = 'blue';
         } else {
             this.score.color = 'black';
+        }
+    }
+
+    changeBariersPosition = (top, bottom) => {
+        if (this.score.value > 6) {
+            top.y -= 5
+            bottom.y += 5
+        } 
+        if (this.score.value > 9) {
+            top.y -= 5
+            bottom.y += 5
+        } 
+        if (this.score.value > 15) {
+            bottom.x -= 4
+            top.x -= 4 
+        }
+        if (this.score.value > 24) {
+            bottom.x -= 10
+            top.x -= 10
         }
     }
 
