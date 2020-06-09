@@ -1,5 +1,9 @@
 import { CANVAS_HEIGHT, CANVAS_WIDTH } from "../consts/canvas-consts";
 import { LINE_LENGTH, LINE_END } from "../consts/line-consts";
+import '../sounds/sound2.mp3'
+import '../sounds/sound3.mp3'
+import '../sounds/tick.mp3'
+
 
 export default class LineAnimation {
     constructor(store, page) {       
@@ -31,9 +35,13 @@ export default class LineAnimation {
 
         page.onCanvasPress(this.press)
         page.onCanvasUp(this.up)
-
-        // this.music = new Audio('sound2.mp3')
-        // this.music.play()
+        
+        this.music = new Audio('sounds/sound2.mp3');
+        this.nextMusic = new Audio('sounds/sound3.mp3');
+        this.barierSound = new Audio('sounds/tick.mp3');
+        ///-----TEMP-----
+        this.playMusic();
+        ///-----TEMP-----
     }
     press = () => {
         this.actions.pressed = true
@@ -97,7 +105,11 @@ export default class LineAnimation {
         if (!this.isStop) {
             this.lineAnimation();
             this.barierAnimation(); 
-
+            ///-----TEMP-----
+            if (this.score.value > 19) {
+                this.playNextMusic();
+            }
+            ///-----TEMP-----
             this._canvas.draw(
             [
                 ...this._linesStore.getLines(), 
@@ -133,7 +145,7 @@ export default class LineAnimation {
 
     crossingBarier = (line) => {
         const bariers = this._bariersStore.getBariers();
-
+ 
         bariers.forEach(barier => {
             const top = barier[0];
             const bottom = barier[1];
@@ -145,16 +157,17 @@ export default class LineAnimation {
                 this.changeBariersPosition(top, bottom)
             }
             if (isCrossed && !isInHole) {
-                if (confirm(`game over! \nscore: ${this.score.value}`)) {
-                    location.reload()
-                }
-                this.isStop = true;
+                // if (confirm(`game over! \nscore: ${this.score.value}`)) {
+                //     location.reload()
+                // }
+                // this.isStop = true;
             }
             // line crossed and barier is not the same
             if (isCrossed && !top.isCrossed) {
                 this.changeScore(top.id);
                 top.isCrossed = true;
-
+                this.barierSound.play();
+                
                 if (this.speedLimit > this.bariersSpeed) {
                     this.lineYspeed += 0.2;
                     this.lineXspeed += 0.2;
@@ -248,6 +261,20 @@ export default class LineAnimation {
         opts.prevX = opts.x - this.bariersSpeed
         opts.x -= this.bariersSpeed; 
     }
+    ///-----TEMP-----
+    playMusic = () => {
+        this.music.play()
+        this.music.loop = true
+        
+    }
 
+    playNextMusic = () => {
+        this.music.loop = false
+        this.music.pause()
+
+        this.nextMusic.play()
+        this.nextMusic.loop = true;
+    }
+    ///-----TEMP-----
     getRand = (min, max) => (Math.random() * (max - min) ) + min;  
 }

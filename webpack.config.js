@@ -38,6 +38,17 @@ module.exports = {
                     }
                 ]
             },
+            {test: /\.mp3$/, use: [
+                {
+                    loader: 'file-loader',
+                    options: {
+                        name: '[name].[ext]',
+                        outputPath: './sounds',
+                        useRelativePath: true,
+                        esModule: false
+                    },
+                }
+            ]},
             {test: /\.html$/, use: 'html-loader'},
             {test: /\.less$/, use: [CssWebpackPlugin.loader, 'css-loader', 'less-loader']},
             {test: /\.js$/, 
