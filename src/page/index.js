@@ -9,20 +9,22 @@ export default class Page {
         this._canvas = this.waveCanvas._canvas;
         this._canvas.style.border = "3px solid black";
         this._root = document.getElementById('root');
+        const body = document.querySelector('body');
 
-        const canvasWrapper = document.createElement('div');
-        canvasWrapper.className = 'canvas-wrapper'
-        const wrapper = document.createElement('div');
-        wrapper.className = 'wrapper'
+        // const canvasWrapper = document.createElement('div');
+        // canvasWrapper.className = 'canvas-wrapper'
+        // const wrapper = document.createElement('div');
+        // wrapper.className = 'wrapper'
 
         // this.bottom = new Bottom();
         // this.header = new Header();
 
-        canvasWrapper.append(this._canvas)
+        // canvasWrapper.append(this._canvas)
 
-        wrapper.append(...[canvasWrapper])
-        this._root.append(wrapper);
-    
+        // wrapper.append(...[canvasWrapper])
+        // this._root.append(wrapper);
+
+        body.append(this._canvas);
     }  
     onCanvasPress = (cb) => {
         this._canvas.onmousedown = () => {

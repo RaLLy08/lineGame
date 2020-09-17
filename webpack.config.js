@@ -11,7 +11,7 @@ module.exports = {
         path: path.resolve(__dirname, '../line-game-back/public')
     },
     devServer: {
-        port: 7776,
+        port: 7777,
         contentBase: path.resolve(__dirname, './build'),
         hot: true,
         open: true,
