@@ -140,7 +140,7 @@ export default class LineAnimation {
         if (lines.length > LINE_LENGTH) lines.shift();
         const newLast = {...lines[lines.length - 1]}
 
-        this.move(newLast)
+        this.moveLine(newLast)
         this._linesStore.addLine(newLast);
         this.crossingBarier(newLast)
     }
@@ -249,11 +249,11 @@ export default class LineAnimation {
 
     }
 
-    move = (opts) => {
+    moveLine = (opts) => {
         opts.prevX = opts.x
         opts.prevY = opts.y
 
-        if (!opts.xIsStop) opts.xt = opts.t;
+        //if (!opts.xIsStop) opts.xt = opts.t;
 
         opts.y += opts.vy;
         opts.x += this.lineXspeed; 
@@ -266,8 +266,7 @@ export default class LineAnimation {
     ///-----TEMP-----
     playMusic = () => {
         this.music.play()
-        this.music.loop = true
-        
+        this.music.loop = true     
     }
 
     playNextMusic = () => {
